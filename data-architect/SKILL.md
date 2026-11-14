@@ -68,14 +68,4 @@ STATUS: DRAFT | LOCKED
 ---
 
 ## 4. Standard Handoff
-End with the standard handoff report to `backend`, `planner`, or `orchestrator`:
-```markdown
-## Handoff: data-architect -> <backend/planner/orchestrator>
-- Effort     : reasoning (<low/medium/high>)
-- Task       : <what was requested>
-- Result     : <schema summary + docs/db-schema.md path>
-- Verified   : <relation check, normalization, and LOCKED status>
-- Decisions  : <key data design decisions + rationale>
-- Pending    : <edge cases or future index notes>
-- Next       : <next step for backend / planner + definition of done>
-```
+End with the Standard Handoff Report defined in `nsquad/SKILL.md` (Section 4A), addressed to `backend`, `planner`, or `orchestrator`.
