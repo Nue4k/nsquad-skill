@@ -7,7 +7,7 @@ description: >-
   a11y-style-checker, docs-release) with per-agent effort (low/medium/high), optional
   owns/workspace overrides, or hr-scouter selections. Use for /panggil-agent,
   "call specific agent", "run agent", or "panggil agent".
-argument-hint: "[option: low|medium|high] <agent> [(effort)] [|| <agent2> [(effort)]] <task>"
+argument-hint: "[<agent> [(effort)] [|| <agent2>] <task>] (leave empty to pick from 14 agents)"
 ---
 
 # Specific Sub-Agent Caller (`panggil-agent`)
@@ -16,7 +16,17 @@ Use this skill when the user wants to **call any agent 1-by-1 on demand**, launc
 
 ---
 
-## 1. Input Modes (5 Flexible Styles)
+## 1. Input Modes (6 Flexible Styles)
+
+0. **Interactive Picker (No Agent Specified — `/panggil-agent` or `/nsquad:panggil-agent <task>`)**:
+   - Triggered automatically when the user invokes `/panggil-agent` without naming an agent (empty args or task-only).
+   - **Step 1 — Pick Agent(s) & Effort via `ask_question`**:
+     Call `ask_question` with two questions:
+     - **Agent Selection** (`is_multi_select: true`): List all 14 agents with brief roles so the user can pick 1 (manual 1-by-1) or multiple (parallel batch):
+       `researcher (SDK/docs lookup, read-only)`, `planner (MVP & roadmap Q&A)`, `hr-scouter (repo audit & formation)`, `orchestrator (pipeline & conflict guard)`, `architect (system blueprint & types)`, `data-architect (DB schema & ERD)`, `reviewer (code/security audit, read-only)`, `backend (API, logic, DB migrations)`, `ui-builder (UI components & styling)`, `debugger (root cause & bugfix)`, `refactorer (cleanup, same behavior)`, `test-writer (automated tests)`, `a11y-style-checker (a11y & UI audit, read-only)`, `docs-release (docs, changelog, release)`.
+     - **Effort Level** (`is_multi_select: false`): `medium (Recommended)`, `low`, `high`. *(Note: `hr-scouter` stays `medium`.)*
+   - **Step 2 — Task Prompt**:
+     If the user already provided `<task>` after `/panggil-agent`, proceed immediately. Otherwise, ask the user in plain text what task they want the selected agent(s) to do.
 
 1. **Single Agent (1-by-1 Specific Invocation)**:
    - Run exactly one agent with its own effort, optional `owns`, and task.
@@ -108,3 +118,9 @@ Map `Universal Tier` to your platform's model (`reasoning` -> AGY `pro` / Claude
    - Pending    : <risks or deferred items>
    - Next       : <next step>
    ```
+6. **Post-Execution Choice (`Lanjut` vs `Cukup 1 Agent`)**:
+   - After a manual 1-by-1 agent (or single-stage batch) finishes and reports its Handoff (unless the user already ran a full `->` pipeline or passed `once`/`cukup`):
+     Call `ask_question` (`is_multi_select: false`) to let the user decide:
+     1. **`Cukup 1 agent ini saja (Selesai)`** — stop here and return control to the user.
+     2. **`Lanjut ke <recommended_next_agent> (sesuai Handoff)`** *(include if Handoff `Next:` names a specific agent)* — invoke that next agent, passing the previous Handoff Report as context.
+     3. **`Lanjut, pilih agent lain dari 14 agent`** — re-open the 14-agent `ask_question` picker (+ effort & next task/context), passing the previous Handoff Report forward. Repeat until the user chooses to stop.
