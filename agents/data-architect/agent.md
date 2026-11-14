@@ -6,12 +6,8 @@ tools:
     - send_message
     - view_file
     - search_web
-    - schedule
-    - generate_image
     - write_file
     - edit_file
-    - run_command
-    - manage_task
 hidden: false
 ---
 
