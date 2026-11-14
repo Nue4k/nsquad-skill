@@ -43,7 +43,7 @@ skill-nsquad/
 ├── planner/SKILL.md         # Interactive MVP & roadmap discussion (docs/project-brief.md)
 ├── data-architect/SKILL.md  # DB schema, relations, constraints, & indexes (docs/db-schema.md)
 ├── hr-scouter/SKILL.md      # Repo audit, team formation, & 3 effort presets (Low/Medium/High)
-└── panggil-agent/SKILL.md   # Selective agent runner + global preset options
+└── summon-agent/SKILL.md    # Selective agent runner + global preset options
 ```
 
 ---
@@ -82,21 +82,26 @@ Copy the 6 skill folders and 14 agent definitions to your global config director
 **Windows (PowerShell):**
 
 ```powershell
-# 1. Copy 6 skills to global nsquad plugin
-$skills = @('data-architect','hr-scouter','initiate-project','nsquad','panggil-agent','planner')
+# 1. Ensure target directories exist
+$skillsDir = "$env:USERPROFILE\.gemini\config\plugins\nsquad\skills"
+$agentsDir = "$env:USERPROFILE\.gemini\config\agents"
+New-Item -ItemType Directory -Force -Path $skillsDir, $agentsDir | Out-Null
+
+# 2. Copy 6 skills to global nsquad plugin
+$skills = @('data-architect','hr-scouter','initiate-project','nsquad','planner','summon-agent')
 foreach ($s in $skills) {
-  Copy-Item -Path ".\$s" -Destination "$env:USERPROFILE\.gemini\config\plugins\nsquad\skills\$s" -Recurse -Force
+  Copy-Item -Path ".\$s" -Destination $skillsDir -Recurse -Force
 }
 
-# 2. Copy 14 sub-agent definitions to global agents
-Copy-Item -Path ".\agents\*" -Destination "$env:USERPROFILE\.gemini\config\agents" -Recurse -Force
+# 3. Copy 14 sub-agent definitions to global agents
+Copy-Item -Path ".\agents\*" -Destination $agentsDir -Recurse -Force
 ```
 
 **macOS / Linux:**
 
 ```bash
 mkdir -p ~/.gemini/config/plugins/nsquad/skills ~/.gemini/config/agents
-cp -r data-architect hr-scouter initiate-project nsquad panggil-agent planner ~/.gemini/config/plugins/nsquad/skills/
+cp -r data-architect hr-scouter initiate-project nsquad planner summon-agent ~/.gemini/config/plugins/nsquad/skills/
 cp -r agents/* ~/.gemini/config/agents/
 ```
 
@@ -105,9 +110,9 @@ cp -r agents/* ~/.gemini/config/agents/
 - Start a new project (0→1): `/initiate-project Build a CLI POS app with SQLite`
 - Interactive blueprint only: `/planner Create a project plan for a notes app`
 - Audit repo & size the team: `/hr-scouter Check which agents are needed to add auth`
-- Cherry-pick 1-by-1: `/panggil-agent backend (high) owns:src/api/auth/ Implement refresh token rotation`
-- Parallel batch: `/panggil-agent [backend (high) || ui-builder (medium) || test-writer (medium)] Build user profile CRUD`
-- Run with a global preset: `/panggil-agent opsi high Refactor the payment module` *(options: `opsi low`, `opsi medium`, `opsi high`)*
+- Cherry-pick 1-by-1: `/summon-agent backend (high) owns:src/api/auth/ Implement refresh token rotation`
+- Parallel batch: `/summon-agent [backend (high) || ui-builder (medium) || test-writer (medium)] Build user profile CRUD`
+- Run with a global preset: `/summon-agent preset high Refactor the payment module` *(options: `preset low`, `preset medium`, `preset high`)*
 
 ---
 
@@ -167,5 +172,3 @@ backend (locks docs/api-contract.md) ──▶ [backend ∥ ui-builder] ──�
 ## Related Documentation
 
 - [nsquad/SKILL.md](nsquad/SKILL.md) — Full architecture rules, contract gates, & 14-agent matrix.
-- [VERSION.md](VERSION.md) — Active version (`2.1.0`) and universal model/effort policy.
-- [CHANGELOG.md](CHANGELOG.md) — Release history.
