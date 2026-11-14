@@ -60,7 +60,7 @@ This skill coordinates the 3 early-phase agents so new projects (or major versio
 1. **Assessment Targets**:
    - Scan `docs/project-brief.md` and repository readiness.
    - Assign strict non-overlapping `owns` boundaries, group independent agents into parallel stages (`P1`, `P2`, ...), and merge minor roles where appropriate.
-   - Output **1-by-1 `/panggil-agent` commands** for each agent plus **3 Effort Presets**:
+   - Output **1-by-1 `/summon-agent` commands** for each agent plus **3 Effort Presets**:
      - **Low**: Minimalist, fast (single MVP focus).
      - **Medium (Recommended)**: Balanced, with reviewer and test verification.
      - **High**: Maximum platform capability, parallel QA/testing, and full release docs.
@@ -74,5 +74,5 @@ This skill coordinates the 3 early-phase agents so new projects (or major versio
 - Run via slash command: `/initiate-project <project_idea>`
 - Or invoke directly:
   ```text
-  /panggil-agent [researcher (medium) || planner (medium)] -> hr-scouter (medium)
+  /summon-agent [researcher (medium) || planner (medium)] -> hr-scouter (medium)
   ```

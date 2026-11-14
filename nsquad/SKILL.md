@@ -11,7 +11,7 @@ description: >-
 
 > **Version:** 2.1.0 (Universal Model Tiers: `reasoning` / `standard` / `fast` for AGY, Claude, & OpenAI Codex) | **Style:** Clear, Structured, Zero Ambiguity
 
-This document defines the architecture and collaboration protocol for multi-agent software development across any AI coding platform (**Antigravity**, **Claude Code**, **OpenAI Codex**, **Cursor**, or custom orchestrators). It is **elastic**: you can run the full squad (14 agents), a lean subset (2–5 agents via `/panggil-agent`), or a single agent solo depending on task scale.
+This document defines the architecture and collaboration protocol for multi-agent software development across any AI coding platform (**Antigravity**, **Claude Code**, **OpenAI Codex**, **Cursor**, or custom orchestrators). It is **elastic**: you can run the full squad (14 agents), a lean subset (2–5 agents via `/summon-agent`), or a single agent solo depending on task scale.
 
 ---
 
@@ -49,7 +49,7 @@ Instead of vendor-locked model names, `skill-nsquad` uses **3 universal model ti
 
 ## 3. Dynamic Collaboration Protocol (1 to 14 Agents)
 
-To keep execution smooth even when only a subset of agents is active (e.g., via `/panggil-agent`), follow these 4 adaptive rules:
+To keep execution smooth even when only a subset of agents is active (e.g., via `/summon-agent`), follow these 4 adaptive rules:
 
 ### A. File-Based Contracts & Readiness Gates (*Contract Readiness Gate*)
 Agents coordinate through 5 documents in `docs/`:
@@ -145,7 +145,7 @@ System prompts, `tools:` allowlists, and canonical models for each agent live in
 ### A. Initiation & Pre-Execution
 1. **New Project (0-to-1)**: Run **`/planner`** for interactive MVP & workflow planning (`docs/project-brief.md`).
 2. **Team & Effort Sizing**: Run **`/hr-scouter`** to scan the repo and get team formation, `owns`, 1-by-1 commands, and effort presets (`low`/`medium`/`high`).
-3. **Flexible Execution**: Run any 1-by-1 or parallel subset via **`/panggil-agent`** or **`/teamwork`** / `swarm`.
+3. **Flexible Execution**: Run any 1-by-1 or parallel subset via **`/summon-agent`** or **`/teamwork`** / `swarm`.
 
 ### B. Standard Pipelines (Full Parallel vs Lean Mode)
 `orchestrator` selects a pipeline below, skips inactive agents, and **launches every non-conflicting step in parallel**:

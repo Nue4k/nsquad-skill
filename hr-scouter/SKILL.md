@@ -33,7 +33,7 @@ You are now acting as **HR & Team Scouter** (*Read-Only*, `standard` tier, **fix
 
 Present your analysis in **3 clear parts**:
 1. **Part 1: Ideal HR Formation & Parallel Plan** (table with `Stage / Parallel Group`, `Model`, `Effort`, `Workspace`, `Owns`).
-2. **Part 2: 1-by-1 Specific Commands** (one ready-to-copy `/panggil-agent` command per agent so the user can call any single agent 1-by-1, plus the full parallel batch command).
+2. **Part 2: 1-by-1 Specific Commands** (one ready-to-copy `/summon-agent` command per agent so the user can call any single agent 1-by-1, plus the full parallel batch command).
 3. **Part 3 (Outside Main Template): 3 Global Effort Presets (`low` / `medium` / `high`)**.
 
 ```markdown
@@ -50,9 +50,9 @@ Present your analysis in **3 clear parts**:
 - **Parallel Strategy**: <which stages run in parallel (`||`) and which wait for `STATUS: LOCKED` gates>
 
 ### 1-by-1 Specific Commands (Run Any Agent Individually)
-- **Run #1 (`<agent_1>`):** `/panggil-agent <agent_1> (<effort>) owns:<path> <task_1>`
-- **Run #2 (`<agent_2>`):** `/panggil-agent <agent_2> (<effort>) owns:<path> <task_2>`
-- **Run All (Parallel Pipeline):** `/panggil-agent [<agent_1> (<effort>) || <agent_2> (<effort>)] -> <agent_3> (<effort>) <summary_task>`
+- **Run #1 (`<agent_1>`):** `/summon-agent <agent_1> (<effort>) owns:<path> <task_1>`
+- **Run #2 (`<agent_2>`):** `/summon-agent <agent_2> (<effort>) owns:<path> <task_2>`
+- **Run All (Parallel Pipeline):** `/summon-agent [<agent_1> (<effort>) || <agent_2> (<effort>)] -> <agent_3> (<effort>) <summary_task>`
 ```
 
 Below the main block above, **always show** the 3 global preset options:
@@ -64,17 +64,17 @@ Below the main block above, **always show** the 3 global preset options:
 1. **🟢 LOW Preset (Quota-Saving & Fast / Prototype)**
    - **Profile**: All selected agents run at `low` (except `hr-scouter` fixed at `medium`), trimmed to the bare minimum (2–3 core agents).
    - **Command**:
-     `/panggil-agent [<agent_1> (low) || <agent_2> (low)] <short_task>`
+     `/summon-agent [<agent_1> (low) || <agent_2> (low)] <short_task>`
 
 2. **🟡 MEDIUM Preset (Balanced / Standard Feature)**
    - **Profile**: All selected agents run at `medium`, 3–4 agents with type contracts and standard build/test checks.
    - **Command**:
-     `/panggil-agent [<agent_1> (medium) || <agent_2> (medium)] -> <agent_3> (medium) <short_task>`
+     `/summon-agent [<agent_1> (medium) || <agent_2> (medium)] -> <agent_3> (medium) <short_task>`
 
 3. **🔴 HIGH Preset (Maximum / Robust & Production-Grade)**
    - **Profile**: All active agents run at **`high`** (maximum platform capability, except `hr-scouter` fixed at `medium`) + full parallel test/review pass.
    - **Command**:
-     `/panggil-agent <agent_1> (high) -> [<agent_2> (high) || <agent_3> (high)] -> <agent_4> (high) <short_task>`
+     `/summon-agent <agent_1> (high) -> [<agent_2> (high) || <agent_3> (high)] -> <agent_4> (high) <short_task>`
 ```
 
 Do not modify any code files in this step. Ask the user whether they want to run the **Ideal HR Formation**, pick **1-by-1 specific agents** (e.g., `run #1 and #2`), choose **Low / Medium / High**, or customize per-agent effort.

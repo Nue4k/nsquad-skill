@@ -73,5 +73,5 @@ Once aligned (or if the user asks for an immediate draft), write `docs/project-b
 At the end of planning, offer clear next commands for the user:
 - *"Run `/data-architect` if the project uses a database and you want to detail `docs/db-schema.md`."*
 - *"Run `/hr-scouter` to scan the repo, get 1-by-1 agent commands, and pick an effort preset."*
-- *"Run `/panggil-agent [architect (medium) || data-architect (medium)]` to start `docs/plan.md` and `docs/db-schema.md` in parallel."*
-- *"Run `/panggil-agent <phase_1_agents>` to jump straight into building the MVP."*
+- *"Run `/summon-agent [architect (medium) || data-architect (medium)]` to start `docs/plan.md` and `docs/db-schema.md` in parallel."*
+- *"Run `/summon-agent <phase_1_agents>` to jump straight into building the MVP."*
