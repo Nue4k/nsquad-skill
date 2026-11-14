@@ -43,22 +43,20 @@ skill-nsquad/
 ├── planner/SKILL.md         # Interactive MVP & roadmap discussion (docs/project-brief.md)
 ├── data-architect/SKILL.md  # DB schema, relations, constraints, & indexes (docs/db-schema.md)
 ├── hr-scouter/SKILL.md      # Repo audit, team formation, & 3 effort presets (Low/Medium/Maks)
-├── panggil-agent/SKILL.md   # Selective agent runner + global preset options
-├── VERSION.md               # Active version manifest & model/effort policy
-└── CHANGELOG.md             # Release history
+└──  panggil-agent/SKILL.md   # Selective agent runner + global preset options
 ```
 
 ---
 
 ## The 14 Sub-Agents & Model Tiers
 
-| No | Agent                  | Model Tier            | Effort                          | Write Access | Default Ownership (`owns`)                               | Primary Role                                                                                  |
-| :- | :--------------------- | :-------------------- | :------------------------------ | :----------- | :--------------------------------------------------------- | :-------------------------------------------------------------------------------------------- |
+| No | Agent                  | Model Tier            | Effort                         | Write Access | Default Ownership (`owns`)                               | Primary Role                                                                                  |
+| :- | :--------------------- | :-------------------- | :----------------------------- | :----------- | :--------------------------------------------------------- | :-------------------------------------------------------------------------------------------- |
 | 00 | `researcher`         | Fast (`flash`)      | `low` / `medium` / `max` | Read-Only    | `[]`                                                     | Verify runtime/SDK versions, compatibility, & breaking changes                                |
 | 0A | `planner`            | Heavy (`pro`)*      | `low` / `medium` / `max` | Write        | `docs/project-brief.md`                                  | Interactive Q&A for MVP scope, stack, & roadmap                                               |
-| 0B | `hr-scouter`         | Fast (`flash`)      | **`medium` (fixed)**    | Read-Only    | `[]`                                                     | Scan repo, recommend team formation, `owns`, & 3 effort presets                             |
+| 0B | `hr-scouter`         | Fast (`flash`)      | **`medium` (fixed)**   | Read-Only    | `[]`                                                     | Scan repo, recommend team formation, `owns`, & 3 effort presets                             |
 | 1  | `orchestrator`       | Fast (`flash`)      | `low` / `medium` / `max` | Write        | `docs/decisions.md`                                      | Pick pipeline, delegate tasks, prevent file conflicts, cap revise loop at 2x                  |
-| 2  | `architect`          | Heavy (`pro`)       | `low` / `medium` / `max` | Write        | `docs/plan.md`, `src/types/`, `shared/`           | Technical blueprint, shared type contracts, & YAGNI                                           |
+| 2  | `architect`          | Heavy (`pro`)       | `low` / `medium` / `max` | Write        | `docs/plan.md`, `src/types/`, `shared/`              | Technical blueprint, shared type contracts, & YAGNI                                           |
 | 2B | `data-architect`     | Heavy (`pro`)*      | `low` / `medium` / `max` | Write        | `docs/db-schema.md`                                      | Table design, relations, constraints, indexes, & lock `STATUS: LOCKED`                      |
 | 3  | `reviewer`           | Heavy (`pro`)       | `low` / `medium` / `max` | Read-Only    | `[]`                                                     | Audit diff against contracts, logic, security, & issue `APPROVE`/`REVISE`                 |
 | 4  | `backend`            | Fast (`flash`)      | `low` / `medium` / `max` | Write        | Server/API/data, DB migrations, `docs/api-contract.md`   | Lock API contract, implement business logic, validation, & data access                        |
