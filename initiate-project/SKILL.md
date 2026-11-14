@@ -24,7 +24,7 @@ This skill coordinates the 3 early-phase agents so new projects (or major versio
                                  ▼
    ┌────────────────────────────────────────────────────────────┐
    │ 2. HR-SCOUTER (Fixed medium: Team Formation, Parallel Plan,│
-   │    1-by-1 Commands & Low/Medium/Max Presets)               │
+   │    1-by-1 Commands & low/medium/high Presets)               │
    └─────────────────────────────┬──────────────────────────────┘
                                  │ Ready-to-run commands
                                  ▼
@@ -63,7 +63,7 @@ This skill coordinates the 3 early-phase agents so new projects (or major versio
    - Output **1-by-1 `/panggil-agent` commands** for each agent plus **3 Effort Presets**:
      - **Low**: Minimalist, fast (single MVP focus).
      - **Medium (Recommended)**: Balanced, with reviewer and test verification.
-     - **Max**: Maximum platform capability, parallel QA/testing, and full release docs.
+     - **High**: Maximum platform capability, parallel QA/testing, and full release docs.
 2. **Role Boundary**: Read-Only; never edits files or runs implementation.
 3. **Output**: Team formation table, 1-by-1 commands, and parallel batch command ready for execution.
 

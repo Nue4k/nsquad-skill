@@ -4,29 +4,30 @@ description: >-
   Modular 14-sub-agent architecture (researcher, planner, hr-scouter, orchestrator,
   architect, data-architect, reviewer, backend, ui-builder, debugger, refactorer,
   test-writer, a11y-style-checker, docs-release) with flexible effort selection
-  (low/medium/max), contract readiness gates, parallel execution, and 0-to-1 initiation.
+  (low/medium/high), contract readiness gates, parallel execution, and 0-to-1 initiation.
 ---
 
 # Modular Sub-Agent Architecture (`AGENTS.md`)
 
-> **Version:** 2.0.0 (Full English, 1-by-1 Specific Invocation & Expanded Parallelism) | **Style:** Clear, Structured, Zero Ambiguity
+> **Version:** 2.1.0 (Universal Model Tiers: `reasoning` / `standard` / `fast` for AGY, Claude, & OpenAI Codex) | **Style:** Clear, Structured, Zero Ambiguity
 
-This document defines the architecture and collaboration protocol for multi-agent software development. It is **elastic**: you can run the full squad (14 agents), a lean subset (2–5 agents via `/panggil-agent`), or a single agent solo depending on task scale.
+This document defines the architecture and collaboration protocol for multi-agent software development across any AI coding platform (**Antigravity**, **Claude Code**, **OpenAI Codex**, **Cursor**, or custom orchestrators). It is **elastic**: you can run the full squad (14 agents), a lean subset (2–5 agents via `/panggil-agent`), or a single agent solo depending on task scale.
 
 ---
 
-## 1. Model Mapping, Tool Parameters & Flexible Effort
+## 1. Universal Model Tiers, Platform Mapping & Flexible Effort
 
-When spawning sub-agents via `invoke_subagent` or `swarm`, map each agent tier and effort (`low`, `medium`, `max`) to Antigravity tool parameters:
+Instead of vendor-locked model names, `skill-nsquad` uses **3 universal model tiers** (`reasoning`, `standard`, `fast`) and **3 effort levels** (`low`, `medium`, `high`). Map them to your AI platform's native parameters:
 
-| Design Tier | Agents | `Model` Tool Parameter | Effort Policy (`low` / `medium` / `max`) |
-| :--- | :--- | :--- | :--- |
-| **Argon** (`argon`) | **Core:** `architect`, `reviewer`<br>**Optional (large projects):** `planner`, `data-architect` | `inherit` *(if main session uses Argon)* or `pro` | **Flexible (`low` / `medium` / `max`)** per user preference or `hr-scouter` recommendation.<br>- For small-to-medium tasks, run `/planner` directly in the main session (no extra sub-agent) and merge `data-architect` into `architect`/`backend`.<br>- `low`: small review/design (1–2 files, straightforward flow).<br>- `medium`: standard architecture, DB schema, or medium PR review.<br>- `max`: complex cross-module architecture, large 0-to-1 design, or critical PR audit. |
-| **Hydrogen** (`hydrogen`) | **Research & Coordination:** `researcher`, `hr-scouter`, `orchestrator`<br>**Core Workers:** `backend`, `ui-builder`, `debugger`, `refactorer`, `test-writer`<br>**Checklist & Docs:** `a11y-style-checker`, `docs-release` | `flash` *(research, coordination, & core workers)* / `flash_lite`–`flash` *(`a11y`, `docs`)* | **`hr-scouter` is fixed at `medium`.** All other agents are **flexible (`low` / `medium` / `max`)** per user preference or `hr-scouter` recommendation.<br>- Antigravity's `invoke_subagent` enum accepts `inherit`, `flash_lite`, `flash`, `pro`, so Hydrogen maps to `flash` (research, coordination, coding/debugging/testing) and `flash_lite` (`low` checklists/docs).<br>- `low`: checklist/template tasks (`a11y`, `docs` -> `flash_lite`), simple routing, or small edits.<br>- `medium`: SDK research (`researcher`), team sizing (`hr-scouter`, **fixed**), orchestration (`orchestrator`), or scoped implementation (`flash`).<br>- `max`: maximum reasoning available on the platform for complex modules from scratch, state/API integration, or hard root-cause debugging (`flash`). |
+| Universal Tier | Agents | Antigravity (`invoke_subagent`) | Claude Code (`model:`) | OpenAI / Codex | Effort Policy (`low` / `medium` / `high`) |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **`reasoning`** *(Heavy / Architecture & QA)* | **Core:** `architect`, `reviewer`<br>**Optional (large projects):** `planner`, `data-architect` | `pro` *(or `inherit`)* | `opus` *(or `inherit`)* | Reasoning / flagship model (e.g., `o3` / `gpt-5`) | **Flexible (`low` / `medium` / `high`)** per user preference or `hr-scouter` recommendation.<br>- For small-to-medium tasks, run `/planner` in the main session and merge `data-architect` into `architect`/`backend`. |
+| **`standard`** *(Fast Coding, Research & Coordination)* | **Research & Coordination:** `researcher`, `hr-scouter`, `orchestrator`<br>**Core Workers:** `backend`, `ui-builder`, `debugger`, `refactorer`, `test-writer` | `flash` | `sonnet` | Standard fast coding model (e.g., `gpt-4o` / `codex`) | **`hr-scouter` is fixed at `medium`.** All other agents are **flexible (`low` / `medium` / `high`)** per user preference or `hr-scouter` recommendation. |
+| **`fast`** *(Lightweight Checklist & Docs)* | `a11y-style-checker`, `docs-release` | `flash_lite` (`low`) / `flash` (`medium`/`high`) | `haiku` | Lightweight mini model (e.g., `gpt-4o-mini`) | **Flexible (`low` / `medium` / `high`)** per user preference or `hr-scouter` recommendation. |
 
-> **`define_subagent` Implementation Note:**
-> - **Read-Only** agents (`researcher`, `hr-scouter`, `reviewer`, `a11y-style-checker`): set `EnableWriteTools: false`.
-> - **Planning, Coordination & Writer** agents (`planner`, `orchestrator`, `architect`, `data-architect`, `backend`, `ui-builder`, `debugger`, `refactorer`, `test-writer`, `docs-release`): set `EnableWriteTools: true`.
+> **Tool Permission Note (Read-Only vs Writer):**
+> - **Read-Only** agents (`researcher`, `hr-scouter`, `reviewer`, `a11y-style-checker`): disable write/edit tools (e.g., `EnableWriteTools: false` in AGY, or omit `Write`/`Edit` in Claude/Codex).
+> - **Planning, Coordination & Writer** agents (`planner`, `orchestrator`, `architect`, `data-architect`, `backend`, `ui-builder`, `debugger`, `refactorer`, `test-writer`, `docs-release`): enable write/edit tools.
 
 ---
 
@@ -84,7 +85,7 @@ For lean runs (2–3 agents), `hr-scouter` or `orchestrator` merges minor roles 
 ### A. Standard Handoff Report (Required at End of Task)
 ```markdown
 ## Handoff: <sender_agent> -> <receiver_agent_or_orchestrator>
-- Effort     : <pro/flash/flash_lite> (<low/medium/max>)
+- Effort     : <reasoning/standard/fast> (<low/medium/high>)
 - Task       : <what was requested>
 - Result     : <what was completed + list of created/modified file paths>
 - Verified   : <typecheck/lint/test results before handoff>
@@ -95,7 +96,7 @@ For lean runs (2–3 agents), `hr-scouter` or `orchestrator` merges minor roles 
 
 ### B. `docs/project-brief.md` & `hr-scouter` Templates
 - The canonical `docs/project-brief.md` blueprint template is defined in `planner/SKILL.md`.
-- The canonical `hr-scouter` team formation table, 1-by-1 commands, and 3 effort presets (`Low` / `Medium` / `Max`) are defined in `hr-scouter/SKILL.md`.
+- The canonical `hr-scouter` team formation table, 1-by-1 commands, and 3 effort presets (`low` / `medium` / `high`) are defined in `hr-scouter/SKILL.md`.
 
 ### C. Concise `docs/plan.md` & `docs/api-contract.md` Templates
 ```markdown
@@ -120,22 +121,22 @@ STATUS: DRAFT | LOCKED (`docs/api-contract.md`)
 
 System prompts, `tools:` allowlists, and canonical models for each agent live in `agents/<agent-name>/agent.md`.
 
-| No | Agent | Tier / Tool `Model` | Effort | Write Tools | Ownership (`owns`) | Ideal Handoff | Focus & Boundaries (*Out of Scope*) |
+| No | Agent | Universal Tier | Effort | Write Tools | Ownership (`owns`) | Ideal Handoff | Focus & Boundaries (*Out of Scope*) |
 | :- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| 00 | `researcher` | Hydrogen (`flash`) | `low` / `medium` / `max` | `false` | `[]` | `planner`, `hr-scouter`, `architect` | Verify runtime/SDK versions, compatibility, breaking changes. *No MVP decisions or file edits.* |
-| 0A | `planner` | Argon (`pro` / `inherit`)* | `low` / `medium` / `max` | `true` | `docs/project-brief.md` | `hr-scouter`, `architect`, `orchestrator` | Interactive MVP Q&A, stack, & roadmap (prefer `/planner` in main chat). *No app code.* |
-| 0B | `hr-scouter` | Hydrogen (`flash`) | **`medium` (fixed)** | `false` | `[]` | `orchestrator` / User | Audit repo, recommend team, `owns`, 1-by-1 commands & presets (prefer `/hr-scouter` in main chat). |
-| 1 | `orchestrator` | Hydrogen (`flash`) | `low` / `medium` / `max` | `true` | `docs/decisions.md` | All agents | Pick pipeline, maximize safe parallelism, prevent file conflicts, cap revise loop at 2x. *No feature code.* |
-| 2 | `architect` | Argon (`pro` / `inherit`) | `low` / `medium` / `max` | `true` | `docs/plan.md`, `src/types/`, `shared/` | `backend`, `ui-builder`, `refactorer` | Technical blueprint, shared type contracts, YAGNI. *No business/UI logic or detailed DB schema.* |
-| 2B | `data-architect` | Argon (`pro` / `inherit`)* | `low` / `medium` / `max` | `true` | `docs/db-schema.md` | `backend`, `planner`, `architect` | Design tables, relations, constraints, indexes & lock `STATUS: LOCKED`. *No migrations/API.* |
-| 3 | `reviewer` | Argon (`pro` / `inherit`) | `low` / `medium` / `max` | `false` | `[]` | Workers / `docs-release` | Audit diff vs contracts, logic, security, tests; verdict `APPROVE`/`REVISE`. *No code edits.* |
-| 4 | `backend` | Hydrogen (`flash`) | `low` / `medium` / `max` | `true` | Server/API/data modules, DB migrations, `docs/api-contract.md` | `ui-builder`, `test-writer`, `reviewer` | Lock `docs/api-contract.md` (`LOCKED`), implement logic/API/migrations, Pre-Handoff Check. *No UI.* |
-| 5 | `ui-builder` | Hydrogen (`flash`) | `low` / `medium` / `max` | `true` | UI components, pages, view states, styling | `a11y-style-checker`, `test-writer`, `reviewer` | Build UI matching `LOCKED` contract (or mock), handle 4 states (`loading`, `empty`, `error`, `success`). |
-| 6 | `debugger` | Hydrogen (`flash`) | `low` / `medium` / `max` | `true` | Bug-related files only | `test-writer`, `reviewer` | Reproduce bug, prove root cause, minimal safe fix + Pre-Handoff Check. *No broad refactors.* |
-| 7 | `refactorer` | Hydrogen (`flash`) | `low` / `medium` / `max` | `true` | Target refactoring files | `test-writer`, `reviewer` | Reduce duplication & simplify structure with 100% identical external behavior. *No new features.* |
-| 8 | `test-writer` | Hydrogen (`flash`) | `low` / `medium` / `max` | `true` | `tests/`, `**/*.test.*`, `**/*.spec.*` | `reviewer` / code owner | Write & run deterministic tests (happy path, edge cases, errors). *Never edit production code.* |
-| 9 | `a11y-style-checker` | Hydrogen (`flash_lite`/`flash`) | `low` / `medium` / `max` | `false` | `[]` | `ui-builder`, `reviewer` | Audit contrast, ARIA/labels, keyboard nav, `alt`, headings, & visual consistency. *No code edits.* |
-| 10 | `docs-release` | Hydrogen (`flash_lite`/`flash`) | `low` / `medium` / `max` | `true` | `README.md`, `CHANGELOG.md`, `VERSION.md`, `docs/` | `orchestrator` | Sync docs, changelog, & propose Conventional Commits. *Never `git push` or `merge`.* |
+| 00 | `researcher` | `standard` | `low` / `medium` / `high` | `false` | `[]` | `planner`, `hr-scouter`, `architect` | Verify runtime/SDK versions, compatibility, breaking changes. *No MVP decisions or file edits.* |
+| 0A | `planner` | `reasoning`* | `low` / `medium` / `high` | `true` | `docs/project-brief.md` | `hr-scouter`, `architect`, `orchestrator` | Interactive MVP Q&A, stack, & roadmap (prefer `/planner` in main chat). *No app code.* |
+| 0B | `hr-scouter` | `standard` | **`medium` (fixed)** | `false` | `[]` | `orchestrator` / User | Audit repo, recommend team, `owns`, 1-by-1 commands & presets (prefer `/hr-scouter` in main chat). |
+| 1 | `orchestrator` | `standard` | `low` / `medium` / `high` | `true` | `docs/decisions.md` | All agents | Pick pipeline, maximize safe parallelism, prevent file conflicts, cap revise loop at 2x. *No feature code.* |
+| 2 | `architect` | `reasoning` | `low` / `medium` / `high` | `true` | `docs/plan.md`, `src/types/`, `shared/` | `backend`, `ui-builder`, `refactorer` | Technical blueprint, shared type contracts, YAGNI. *No business/UI logic or detailed DB schema.* |
+| 2B | `data-architect` | `reasoning`* | `low` / `medium` / `high` | `true` | `docs/db-schema.md` | `backend`, `planner`, `architect` | Design tables, relations, constraints, indexes & lock `STATUS: LOCKED`. *No migrations/API.* |
+| 3 | `reviewer` | `reasoning` | `low` / `medium` / `high` | `false` | `[]` | Workers / `docs-release` | Audit diff vs contracts, logic, security, tests; verdict `APPROVE`/`REVISE`. *No code edits.* |
+| 4 | `backend` | `standard` | `low` / `medium` / `high` | `true` | Server/API/data modules, DB migrations, `docs/api-contract.md` | `ui-builder`, `test-writer`, `reviewer` | Lock `docs/api-contract.md` (`LOCKED`), implement logic/API/migrations, Pre-Handoff Check. *No UI.* |
+| 5 | `ui-builder` | `standard` | `low` / `medium` / `high` | `true` | UI components, pages, view states, styling | `a11y-style-checker`, `test-writer`, `reviewer` | Build UI matching `LOCKED` contract (or mock), handle 4 states (`loading`, `empty`, `error`, `success`). |
+| 6 | `debugger` | `standard` | `low` / `medium` / `high` | `true` | Bug-related files only | `test-writer`, `reviewer` | Reproduce bug, prove root cause, minimal safe fix + Pre-Handoff Check. *No broad refactors.* |
+| 7 | `refactorer` | `standard` | `low` / `medium` / `high` | `true` | Target refactoring files | `test-writer`, `reviewer` | Reduce duplication & simplify structure with 100% identical external behavior. *No new features.* |
+| 8 | `test-writer` | `standard` | `low` / `medium` / `high` | `true` | `tests/`, `**/*.test.*`, `**/*.spec.*` | `reviewer` / code owner | Write & run deterministic tests (happy path, edge cases, errors). *Never edit production code.* |
+| 9 | `a11y-style-checker` | `fast` | `low` / `medium` / `high` | `false` | `[]` | `ui-builder`, `reviewer` | Audit contrast, ARIA/labels, keyboard nav, `alt`, headings, & visual consistency. *No code edits.* |
+| 10 | `docs-release` | `fast` | `low` / `medium` / `high` | `true` | `README.md`, `CHANGELOG.md`, `VERSION.md`, `docs/` | `orchestrator` | Sync docs, changelog, & propose Conventional Commits. *Never `git push` or `merge`.* |
 
 ---
 
@@ -143,7 +144,7 @@ System prompts, `tools:` allowlists, and canonical models for each agent live in
 
 ### A. Initiation & Pre-Execution
 1. **New Project (0-to-1)**: Run **`/planner`** for interactive MVP & workflow planning (`docs/project-brief.md`).
-2. **Team & Effort Sizing**: Run **`/hr-scouter`** to scan the repo and get team formation, `owns`, 1-by-1 commands, and effort presets (`low`/`medium`/`max`).
+2. **Team & Effort Sizing**: Run **`/hr-scouter`** to scan the repo and get team formation, `owns`, 1-by-1 commands, and effort presets (`low`/`medium`/`high`).
 3. **Flexible Execution**: Run any 1-by-1 or parallel subset via **`/panggil-agent`** or **`/teamwork`** / `swarm`.
 
 ### B. Standard Pipelines (Full Parallel vs Lean Mode)

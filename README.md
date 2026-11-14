@@ -14,7 +14,7 @@ NSquad stands for Nue Squad (Nue its from my nickname)
 
 - **14 Specialized Roles with Clear Boundaries**: Every agent has explicit file ownership (`owns`) and *Out of Scope* rules to prevent conflicting edits.
 - **Contract Readiness Gates (`STATUS: DRAFT | LOCKED`)**: `backend` waits for `data-architect` to lock `docs/db-schema.md`, and `ui-builder` waits for `backend` to lock `docs/api-contract.md` before running in parallel.
-- **Flexible Effort Selection (`low` / `medium` / `max`)**: `hr-scouter` runs at a **fixed `medium` effort**, while all other agents can be set to `low`, `medium`, or `max` (maximum available on the platform) based on user preference or `hr-scouter` recommendations—without rigid artificial caps.
+- **Flexible Effort Selection (`low` / `medium` / `high`)**: `hr-scouter` runs at a **fixed `medium` effort**, while all other agents can be set to `low`, `medium`, or `high` (maximum available on the platform) based on user preference or `hr-scouter` recommendations—without rigid artificial caps.
 - **1-by-1 Specific Calling & High Parallelism**: Call any agent individually with custom `owns:` and effort, or launch parallel batches (`[backend || ui-builder || test-writer]`) using isolated `share` workspaces.
 
 ---
@@ -42,30 +42,32 @@ skill-nsquad/
 ├── initiate-project/SKILL.md # 0-to-1 funnel (researcher → planner + data-architect → hr-scouter)
 ├── planner/SKILL.md         # Interactive MVP & roadmap discussion (docs/project-brief.md)
 ├── data-architect/SKILL.md  # DB schema, relations, constraints, & indexes (docs/db-schema.md)
-├── hr-scouter/SKILL.md      # Repo audit, team formation, & 3 effort presets (Low/Medium/Maks)
-└──  panggil-agent/SKILL.md   # Selective agent runner + global preset options
+├── hr-scouter/SKILL.md      # Repo audit, team formation, & 3 effort presets (Low/Medium/High)
+└── panggil-agent/SKILL.md   # Selective agent runner + global preset options
 ```
 
 ---
 
-## The 14 Sub-Agents & Model Tiers
+## The 14 Sub-Agents & Universal Model Tiers
 
-| No | Agent                  | Model Tier            | Effort                         | Write Access | Default Ownership (`owns`)                               | Primary Role                                                                                  |
-| :- | :--------------------- | :-------------------- | :----------------------------- | :----------- | :--------------------------------------------------------- | :-------------------------------------------------------------------------------------------- |
-| 00 | `researcher`         | Fast (`flash`)      | `low` / `medium` / `max` | Read-Only    | `[]`                                                     | Verify runtime/SDK versions, compatibility, & breaking changes                                |
-| 0A | `planner`            | Heavy (`pro`)*      | `low` / `medium` / `max` | Write        | `docs/project-brief.md`                                  | Interactive Q&A for MVP scope, stack, & roadmap                                               |
-| 0B | `hr-scouter`         | Fast (`flash`)      | **`medium` (fixed)**   | Read-Only    | `[]`                                                     | Scan repo, recommend team formation, `owns`, & 3 effort presets                             |
-| 1  | `orchestrator`       | Fast (`flash`)      | `low` / `medium` / `max` | Write        | `docs/decisions.md`                                      | Pick pipeline, delegate tasks, prevent file conflicts, cap revise loop at 2x                  |
-| 2  | `architect`          | Heavy (`pro`)       | `low` / `medium` / `max` | Write        | `docs/plan.md`, `src/types/`, `shared/`              | Technical blueprint, shared type contracts, & YAGNI                                           |
-| 2B | `data-architect`     | Heavy (`pro`)*      | `low` / `medium` / `max` | Write        | `docs/db-schema.md`                                      | Table design, relations, constraints, indexes, & lock `STATUS: LOCKED`                      |
-| 3  | `reviewer`           | Heavy (`pro`)       | `low` / `medium` / `max` | Read-Only    | `[]`                                                     | Audit diff against contracts, logic, security, & issue `APPROVE`/`REVISE`                 |
-| 4  | `backend`            | Fast (`flash`)      | `low` / `medium` / `max` | Write        | Server/API/data, DB migrations, `docs/api-contract.md`   | Lock API contract, implement business logic, validation, & data access                        |
-| 5  | `ui-builder`         | Fast (`flash`)      | `low` / `medium` / `max` | Write        | UI components, pages, view states, styling                 | Build responsive UI matching locked contract (`loading`, `empty`, `error`, `success`) |
-| 6  | `debugger`           | Fast (`flash`)      | `low` / `medium` / `max` | Write        | Bug-related files only                                     | Reproduce bug, prove root cause, & apply minimal safe fix                                     |
-| 7  | `refactorer`         | Fast (`flash`)      | `low` / `medium` / `max` | Write        | Target refactoring files                                   | Reduce duplication & clean structure with 100% identical external behavior                    |
-| 8  | `test-writer`        | Fast (`flash`)      | `low` / `medium` / `max` | Write        | `tests/`, `**/*.test.*`, `**/*.spec.*`               | Write deterministic tests without modifying production code                                   |
-| 9  | `a11y-style-checker` | Lite (`flash_lite`) | `low` / `medium` / `max` | Read-Only    | `[]`                                                     | Audit accessibility (contrast, ARIA, keyboard) & visual consistency                           |
-| 10 | `docs-release`       | Lite (`flash_lite`) | `low` / `medium` / `max` | Write        | `README.md`, `CHANGELOG.md`, `VERSION.md`, `docs/` | Sync documentation, changelog, & propose Conventional Commits                                 |
+`skill-nsquad` uses 3 vendor-neutral model tiers (`reasoning`, `standard`, `fast`) so it works on any AI platform:
+
+| No | Agent | Universal Tier | Effort | Write Access | Default Ownership (`owns`) | Primary Role |
+| :- | :--- | :--- | :--- | :--- | :--- | :--- |
+| 00 | `researcher` | `standard` | `low` / `medium` / `high` | Read-Only | `[]` | Verify runtime/SDK versions, compatibility, & breaking changes |
+| 0A | `planner` | `reasoning`* | `low` / `medium` / `high` | Write | `docs/project-brief.md` | Interactive Q&A for MVP scope, stack, & roadmap |
+| 0B | `hr-scouter` | `standard` | **`medium` (fixed)** | Read-Only | `[]` | Scan repo, recommend team formation, `owns`, & 3 effort presets |
+| 1 | `orchestrator` | `standard` | `low` / `medium` / `high` | Write | `docs/decisions.md` | Pick pipeline, delegate tasks, prevent file conflicts, cap revise loop at 2x |
+| 2 | `architect` | `reasoning` | `low` / `medium` / `high` | Write | `docs/plan.md`, `src/types/`, `shared/` | Technical blueprint, shared type contracts, & YAGNI |
+| 2B | `data-architect` | `reasoning`* | `low` / `medium` / `high` | Write | `docs/db-schema.md` | Table design, relations, constraints, indexes, & lock `STATUS: LOCKED` |
+| 3 | `reviewer` | `reasoning` | `low` / `medium` / `high` | Read-Only | `[]` | Audit diff against contracts, logic, security, & issue `APPROVE`/`REVISE` |
+| 4 | `backend` | `standard` | `low` / `medium` / `high` | Write | Server/API/data, DB migrations, `docs/api-contract.md` | Lock API contract, implement business logic, validation, & data access |
+| 5 | `ui-builder` | `standard` | `low` / `medium` / `high` | Write | UI components, pages, view states, styling | Build responsive UI matching locked contract (`loading`, `empty`, `error`, `success`) |
+| 6 | `debugger` | `standard` | `low` / `medium` / `high` | Write | Bug-related files only | Reproduce bug, prove root cause, & apply minimal safe fix |
+| 7 | `refactorer` | `standard` | `low` / `medium` / `high` | Write | Target refactoring files | Reduce duplication & clean structure with 100% identical external behavior |
+| 8 | `test-writer` | `standard` | `low` / `medium` / `high` | Write | `tests/`, `**/*.test.*`, `**/*.spec.*` | Write deterministic tests without modifying production code |
+| 9 | `a11y-style-checker` | `fast` | `low` / `medium` / `high` | Read-Only | `[]` | Audit accessibility (contrast, ARIA, keyboard) & visual consistency |
+| 10 | `docs-release` | `fast` | `low` / `medium` / `high` | Write | `README.md`, `CHANGELOG.md`, `VERSION.md`, `docs/` | Sync documentation, changelog, & propose Conventional Commits |
 
 > \* **Quota-Saving Tip:** For small-to-medium projects, run `/planner` and `/hr-scouter` directly in the main chat session (without spawning a new sub-agent) and merge `data-architect` into `architect`/`backend`.
 
@@ -103,9 +105,9 @@ cp -r agents/* ~/.gemini/config/agents/
 - Start a new project (0→1): `/initiate-project Build a CLI POS app with SQLite`
 - Interactive blueprint only: `/planner Create a project plan for a notes app`
 - Audit repo & size the team: `/hr-scouter Check which agents are needed to add auth`
-- Cherry-pick 1-by-1: `/panggil-agent backend (max) owns:src/api/auth/ Implement refresh token rotation`
-- Parallel batch: `/panggil-agent [backend (max) || ui-builder (medium) || test-writer (medium)] Build user profile CRUD`
-- Run with a global preset: `/panggil-agent opsi max Refactor the payment module` *(options: `opsi low`, `opsi medium`, `opsi max`)*
+- Cherry-pick 1-by-1: `/panggil-agent backend (high) owns:src/api/auth/ Implement refresh token rotation`
+- Parallel batch: `/panggil-agent [backend (high) || ui-builder (medium) || test-writer (medium)] Build user profile CRUD`
+- Run with a global preset: `/panggil-agent opsi high Refactor the payment module` *(options: `opsi low`, `opsi medium`, `opsi high`)*
 
 ---
 
@@ -115,13 +117,13 @@ All instructions in `skill-nsquad` are standard Markdown files, making them easy
 
 #### A. Model Tier Mapping
 
-Map the `model:` field in `agents/*/agent.md` to your platform's model names:
+The `agents/*/agent.md` frontmatter defaults to Antigravity model keys (`pro`, `flash`, `flash_lite`). For other platforms, map the 3 universal tiers as follows:
 
-| Value in `skill-nsquad` | Purpose                                   | Claude Code Example    | OpenAI / Other Example     |
-| :------------------------ | :---------------------------------------- | :--------------------- | :------------------------- |
-| `pro`                   | Architecture design & critical QA         | `opus` / `inherit` | Reasoning / flagship model |
-| `flash`                 | Coding, debugging, research, coordination | `sonnet`             | Standard fast model        |
-| `flash_lite`            | A11y checklist & documentation updates    | `haiku`              | Lightweight / mini model   |
+| Universal Tier | Purpose | Antigravity (AGY) | Claude Code | OpenAI / Codex |
+| :--- | :--- | :--- | :--- | :--- |
+| `reasoning` | Architecture design & critical QA | `pro` / `inherit` | `opus` / `inherit` | Reasoning / flagship (e.g., `o3`, `gpt-5`) |
+| `standard` | Coding, debugging, research, coordination | `flash` | `sonnet` | Standard fast coding (e.g., `gpt-4o`, `codex`) |
+| `fast` | A11y checklist & documentation updates | `flash_lite` (`low`) / `flash` (`med`/`high`) | `haiku` | Lightweight / mini (e.g., `gpt-4o-mini`) |
 
 #### B. Tool Name Mapping (`tools:` in `agents/*/agent.md`)
 
@@ -165,5 +167,5 @@ backend (locks docs/api-contract.md) ──▶ [backend ∥ ui-builder] ──�
 ## Related Documentation
 
 - [nsquad/SKILL.md](nsquad/SKILL.md) — Full architecture rules, contract gates, & 14-agent matrix.
-- [VERSION.md](VERSION.md) — Active version (`2.0.0`) and model/effort policy.
+- [VERSION.md](VERSION.md) — Active version (`2.1.0`) and universal model/effort policy.
 - [CHANGELOG.md](CHANGELOG.md) — Release history.

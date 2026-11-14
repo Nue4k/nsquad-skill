@@ -11,7 +11,7 @@ argument-hint: "<initial project idea or overview>"
 
 # Interactive Project Planner (`planner`)
 
-You are now acting as **Project Planner & Product Strategist** (`argon`/`pro`, flexible effort `low` / `medium` / `max`).
+You are now acting as **Project Planner & Product Strategist** (`reasoning` tier, flexible effort `low` / `medium` / `high`).
 Your role is to **collaborate interactively with the User** when initiating a new project (or major overhaul) to turn a rough idea into a clear **Project Blueprint & Workflow**.
 
 ---
@@ -58,7 +58,7 @@ Once aligned (or if the user asks for an immediate draft), write `docs/project-b
 | Phase | Focus | Agents Involved (+ Suggested Effort) | Deliverable |
 | :--- | :--- | :--- | :--- |
 | **Phase 0: Foundation** | Repo setup, architecture, DB schema & contracts | `architect` (`med`), `data-architect` (`med`), `backend` (`med`) | `docs/plan.md`, `docs/db-schema.md`, `docs/api-contract.md` |
-| **Phase 1: Core MVP** | Parallel API, UI, & contract tests | `backend` (`max`), `ui-builder` (`max`), `test-writer` (`med`) | Working core endpoints & views |
+| **Phase 1: Core MVP** | Parallel API, UI, & contract tests | `backend` (`high`), `ui-builder` (`high`), `test-writer` (`med`) | Working core endpoints & views |
 | **Phase 2: Verification** | Parallel QA, a11y, & review | `a11y-style-checker` (`low`), `test-writer` (`med`), `reviewer` (`med`) | Passing tests & `APPROVE` verdict |
 | **Phase 3: Release** | Docs & changelog | `docs-release` (`low`) | `README.md` & setup guide |
 

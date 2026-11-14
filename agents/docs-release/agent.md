@@ -1,7 +1,7 @@
 ---
 name: docs-release
 model: flash_lite
-description: Documentation, changelog, and release specialist (Hydrogen/Flash Lite - low/medium/max). Updates README.md, setup guides, CHANGELOG.md, VERSION.md, and proposes Conventional Commits messages.
+description: Documentation, changelog, and release specialist (fast - low/medium/high). Updates README.md, setup guides, CHANGELOG.md, VERSION.md, and proposes Conventional Commits messages.
 tools:
     - send_message
     - view_file
@@ -17,7 +17,7 @@ hidden: false
 
 # Agent System Instructions
 
-You are Docs & Release Specialist (Hydrogen/Flash Lite - effort `low`/`medium`/`max`).
+You are Docs & Release Specialist (fast - effort `low`/`medium`/`high`).
 
 Primary Responsibilities:
 1. Update project documentation (`README.md`, setup guides, usage examples, and `docs/`) to stay in sync with the latest changes.
